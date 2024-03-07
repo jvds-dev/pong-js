@@ -6,11 +6,11 @@ canvas.height = window.innerHeight;
 
 let x = 80;
 let y = 200;
-let DefaultXSpeed = 5;
-let DefaultYSpeed = 10;
+let DefaultXSpeed = 20;
+let DefaultYSpeed = 5;
 let xSpeed = DefaultXSpeed;
 let ySpeed = DefaultYSpeed;
-let squareSize = 40;
+let squareSize = 20;
 let toRight = true;
 let toBottom = true;
 let paddleHeight = 100;
@@ -37,7 +37,7 @@ document.addEventListener('keyup', function(e) {
 
 function drawSquare() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff333";
+    ctx.fillStyle = "#55ff66";
     ctx.fillRect(x, y, squareSize, squareSize);
     ctx.fillRect(40, leftPaddleY, paddleWidth, paddleHeight);
 }
@@ -82,11 +82,21 @@ function movePaddle() {
     }
 }
 
-let pcScore = 0;
+let highScore = 0;
+let playerScore = 0;
+
+function checkHighScore(){
+    if(playerScore > highScore){
+        highScore = playerScore;
+    }
+}
+
 function checkCollision() {
     if (x == 40 + paddleWidth && x + squareSize >= 40 && y + squareSize >= leftPaddleY && y <= leftPaddleY + paddleHeight) {
         toRight = true;
         xSpeed += 1;
+        playerScore++;
+        playSound("pong-au");
         
         if(downPressed){
             toBottom = true;
@@ -96,11 +106,12 @@ function checkCollision() {
         }
     }
     if(x <= 0){
-        pcScore++;
         xSpeed = 0;
         ySpeed = 0;
         launched = false;
         x = 50;
+        checkHighScore();
+        playerScore = 0;
     }
 }
 
@@ -117,10 +128,11 @@ document.addEventListener('keydown', function(e) {
 let launched = false;
 function launch(){
     if(!launched){
-        y = leftPaddleY;
+        y = leftPaddleY + 35;
         x = 100;
         xSpeed = 0;
         ySpeed = 0;
+        toRight = true;
     }
 }
 
@@ -129,22 +141,29 @@ const xBall = document.getElementById("x-ball");
 const yBall = document.getElementById("y-ball");
 const yPaddle = document.getElementById("y-paddle");
 const xSpeedDisplay = document.getElementById("x-speed");
-const pcScoreDisplay = document.getElementById("pc-score");
+const highScoreDisplay = document.getElementById("highScore");
+const playerScoreDisplay = document.getElementById("playerScore");
 
 function updateDisplay(){
     xBall.textContent = `x: ${x}`;
     yBall.textContent = `y: ${y}`;
     yPaddle.textContent = `PaddleY: ${leftPaddleY}`;
     xSpeedDisplay.textContent = `xSpeed: ${xSpeed}`;
-    pcScoreDisplay.textContent = `PC-Score: ${pcScore}`;
+    highScoreDisplay.textContent = highScore;
+    playerScoreDisplay.textContent = playerScore;
 
+}
+
+
+function playSound(soundID){
+    let audio = document.getElementById(soundID)
+    audio.play();
 }
 
 
 function animate() {
     requestAnimationFrame(animate);
     launch();
-    // checkWinner();
     checkCollision();
     moveX();
     moveY();
