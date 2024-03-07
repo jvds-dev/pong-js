@@ -82,11 +82,12 @@ function movePaddle() {
     }
 }
 
+let pcScore = 0;
 function checkCollision() {
     if (x == 40 + paddleWidth && x + squareSize >= 40 && y + squareSize >= leftPaddleY && y <= leftPaddleY + paddleHeight) {
         toRight = true;
         xSpeed += 1;
-
+        
         if(downPressed){
             toBottom = true;
         }
@@ -94,19 +95,14 @@ function checkCollision() {
             toBottom = false;
         }
     }
-}
-
-let pcScore = 0;
-function checkWinner(){
-    if(x == 0){
+    if(x <= 0){
         pcScore++;
-        x = 50;
         xSpeed = 0;
         ySpeed = 0;
         launched = false;
+        x = 50;
     }
 }
-
 
 document.addEventListener('keydown', function(e) {
     if(!launched){
@@ -148,7 +144,7 @@ function updateDisplay(){
 function animate() {
     requestAnimationFrame(animate);
     launch();
-    checkWinner();
+    // checkWinner();
     checkCollision();
     moveX();
     moveY();
